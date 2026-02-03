@@ -23,5 +23,5 @@ class Server(Flask):
 
 if __name__ == "__main__":
     app = Server(__name__)
-    app.secret_key = "HDUTH72958HFUSJ96734HUDYT"
+    app.secret_key = "ABCDE12345FGHIJ67890"
     app.run(host="0.0.0.0", port=5050, debug=True)

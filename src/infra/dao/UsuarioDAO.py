@@ -10,13 +10,13 @@ class UsuarioDAO:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._conn = FactoryConnection.get_connection()
-            cls._instance._init_table()
+            cls._instance._init_tables()
         return cls._instance
 
     # -----------------------------
     # INIT TABLE
     # -----------------------------
-    def _init_table(self):
+    def _init_tables(self):
         """Verifica se a tabela existe. Se não existir, cria via TableUsuario.sql"""
         try:
             sql_check = """
@@ -124,24 +124,30 @@ class UsuarioDAO:
         self._conn.commit()
         return deletado
 
-    """
     # -----------------------------
     # UPDATE (opcional)
     # -----------------------------
     def atualizar(self, usuario: UsuarioVO) -> bool:
-        sql = "
+        sql = """
             UPDATE usuario
-            SET senha = %s
+            SET 
+                senha = %s,
+                data_reforjar = %s,
+                data_cartas_diarias = %s,
+                data_fundir = %s
             WHERE nome = %s
-        "
+        """
 
         with self._conn.cursor() as cur:
             cur.execute(sql, (
                 usuario.get_senha(),
+                usuario.get_data_reforjar(),
+                usuario.get_data_cartas_diarias(),
+                usuario.get_data_fundir(),
                 usuario.get_nome()
             ))
             atualizado = cur.rowcount > 0
 
         self._conn.commit()
         return atualizado
-    """
+
