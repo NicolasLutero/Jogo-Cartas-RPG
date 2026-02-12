@@ -1,5 +1,6 @@
+# LoginCadastroRoutes.py
 from flask import Blueprint, request, jsonify, session
-from src.application.usuario.ControleUsuario import ControleUsuario
+from src.application.UsuarioService import UsuarioService
 import hashlib
 
 login_cadastro_bp = Blueprint("login_cadastro", __name__)
@@ -34,7 +35,7 @@ def cadastrar_usuario():
         "senha": senha_hash
     }
 
-    controle = ControleUsuario()
+    controle = UsuarioService()
 
     if controle.usuario_existe(nome):
         return jsonify({
@@ -69,7 +70,7 @@ def login_usuario():
 
     senha_hash = hash_senha(senha)
 
-    controle = ControleUsuario()
+    controle = UsuarioService()
 
     if not controle.usuario_existe(nome):
         return jsonify({

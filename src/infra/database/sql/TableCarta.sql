@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS carta (
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    fundo TEXT NOT NULL,
+    personagem TEXT NOT NULL,
+    borda TEXT NOT NULL,
+    atr_for NUMERIC(10,2) NOT NULL,
+    atr_des NUMERIC(10,2) NOT NULL,
+    atr_con NUMERIC(10,2) NOT NULL,
+    atr_int NUMERIC(10,2) NOT NULL,
+    atr_sab NUMERIC(10,2) NOT NULL,
+    atr_car NUMERIC(10,2) NOT NULL,
+    dono INTEGER NOT NULL
+);

@@ -1,4 +1,4 @@
-from src.domain.UsuarioVO import UsuarioVO
+from src.domain.entity.UsuarioEntity import UsuarioEntity
 from src.infra.database.FactoryConnection import FactoryConnection
 import os
 
@@ -37,7 +37,6 @@ class UsuarioDAO:
             self._executar_sql_criacao()
 
     def _executar_sql_criacao(self):
-        # Caminho fixo: src/infra/database/sql/TableUsuario.sql
         root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../infra/database/sql"))
         sql_path = os.path.join(root_path, "TableUsuario.sql")
 
@@ -52,11 +51,12 @@ class UsuarioDAO:
     # -----------------------------
     # CREATE
     # -----------------------------
-    def criar(self, usuario: UsuarioVO) -> None:
+    def criar(self, usuario: UsuarioEntity) -> int:
         sql = """
             INSERT INTO usuario (
                 nome,
                 senha,
+                fator_n,
                 data_reforjar,
                 data_cartas_diarias,
                 data_fundir
@@ -64,28 +64,36 @@ class UsuarioDAO:
             VALUES (
                 %s,
                 %s,
+                %s,
                 CURRENT_DATE - INTERVAL '1 day',
                 CURRENT_DATE - INTERVAL '1 day',
                 CURRENT_DATE - INTERVAL '1 day'
-            );
+            )
+            RETURNING id;
         """
 
         with self._conn.cursor() as cur:
             cur.execute(sql, (
                 usuario.get_nome(),
-                usuario.get_senha()
+                usuario.get_senha(),
+                usuario.get_fator_n()
             ))
+            usuario_id = cur.fetchone()[0]
 
         self._conn.commit()
+        usuario.set_id(usuario_id)
+        return usuario_id
 
     # -----------------------------
     # READ ONE
     # -----------------------------
-    def buscar_por_nome(self, nome: str) -> UsuarioVO | None:
+    def buscar_por_nome(self, nome: str) -> UsuarioEntity | None:
         sql = """
             SELECT 
+                id,
                 nome,
                 senha,
+                fator_n,
                 data_reforjar,
                 data_cartas_diarias,
                 data_fundir
@@ -100,12 +108,14 @@ class UsuarioDAO:
         if not row:
             return None
 
-        return UsuarioVO(
-            nome=row[0],
-            senha_hash=row[1],
-            data_reforjar=row[2],
-            data_cartas_diarias=row[3],
-            data_fundir=row[4]
+        return UsuarioEntity(
+            cod=row[0],
+            nome=row[1],
+            senha_hash=row[2],
+            fator_n=float(row[3]),
+            data_reforjar=row[4],
+            data_cartas_diarias=row[5],
+            data_fundir=row[6]
         )
 
     # -----------------------------
@@ -127,7 +137,7 @@ class UsuarioDAO:
     # -----------------------------
     # UPDATE (opcional)
     # -----------------------------
-    def atualizar(self, usuario: UsuarioVO) -> bool:
+    def atualizar(self, usuario: UsuarioEntity) -> bool:
         sql = """
             UPDATE usuario
             SET 

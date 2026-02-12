@@ -1,0 +1,233 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: radial-gradient(circle at top, #f0f0f0, #dcdcdc);
+}
+
+/* ===== Layout ===== */
+
+.container {
+    min-height: 100vh;
+    padding: 18px 26px 16px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ===== Filtro ===== */
+
+.filtro {
+    background: #f3f3f3;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.2);
+    overflow: hidden;
+    position: sticky;
+    top: 18px;
+    z-index: 100;
+    flex-shrink: 0;   /* ← impede colapso */
+}
+
+.filtro-header {
+    padding: 12px 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(180deg, #ffffff, #eaeaea);
+    user-select: none;
+}
+
+.filtro-header span {
+    color: #222;
+}
+
+.filtro-body {
+    display: none;
+    padding: 12px 16px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* layout das 3 caixas lado a lado */
+.filtro-linhas {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+/* cada coluna */
+.filtro-coluna {
+    background: rgba(0,0,0,0.03);
+    border-radius: 10px;
+    padding: 8px 10px;
+    border: 1px solid rgba(0,0,0,0.12);
+}
+
+/* título da coluna */
+.filtro-coluna h4 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    text-align: center;
+    color: #333;
+}
+
+/* checkbox */
+.filtro-coluna label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.filtro-coluna input[type="checkbox"] {
+    cursor: pointer;
+}
+
+/* scroll interno bonito */
+.filtro-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.filtro-body::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.05);
+    border-radius: 10px;
+}
+
+.filtro-body::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.25);
+    border-radius: 10px;
+}
+
+/* aberto */
+.filtro.aberto .filtro-body {
+    display: block;
+}
+
+/* ===== Wrapper ===== */
+
+.cartas-wrapper {
+    flex: 1;
+    display: flex;
+}
+
+/* ===== Grid ===== */
+
+.cartas-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+    width: 100%;
+    height: 100%;
+}
+
+/* ===== Carta ===== */
+
+.carta {
+    background: linear-gradient(180deg, #ffffff, #f3f3f3);
+    border-radius: 16px;
+    border: 2px solid rgba(0,0,0,0.18);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+
+    transition:
+        box-shadow 0.25s ease,
+        border-color 0.25s ease,
+        filter 0.25s ease,
+        background 0.25s ease;
+    position: relative;
+}
+
+/* Efeito de luz dinâmica */
+.carta::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        circle at var(--x, 50%) var(--y, 50%),
+        rgba(255,255,255,0.25),
+        transparent 45%
+    );
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+}
+
+.carta:hover {
+    box-shadow:
+        0 10px 26px rgba(0,0,0,0.28),
+        inset 0 0 12px rgba(255,255,255,0.35);
+    border-color: rgba(44, 123, 229, 0.6);
+    filter: brightness(1.02);
+    background: linear-gradient(180deg, #ffffff, #eeeeee);
+}
+
+.carta:hover::after {
+    opacity: 1;
+}
+
+/* ===== Título ===== */
+
+.titulo {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #222;
+}
+
+/* ===== Imagem ===== */
+
+.imagem-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    margin: 6px 0;
+}
+
+.imagem-carta {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 30px;
+    border: 2px solid rgba(0,0,0,0.75);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* ===== Stats ===== */
+
+.stats {
+    font-size: 12px;
+    background: rgba(0,0,0,0.04);
+    border-radius: 10px;
+    padding: 6px 8px;
+}
+
+.stats div {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+}
+
+.stats span:first-child {
+    font-weight: 600;
+}

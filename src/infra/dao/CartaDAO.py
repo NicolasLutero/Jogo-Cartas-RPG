@@ -1,0 +1,351 @@
+from src.domain.entity.CartaEntity import CartaEntity
+from src.infra.database.FactoryConnection import FactoryConnection
+import os
+
+
+class CartaDAO:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._conn = FactoryConnection.get_connection()
+            cls._instance._init_tables()
+        return cls._instance
+
+    # -----------------------------
+    # INIT TABLE
+    # -----------------------------
+    def _init_tables(self):
+        """Verifica se a tabela existe. Se não existir, cria via TableCarta.sql"""
+        try:
+            sql_check = """
+                SELECT 1
+                FROM information_schema.tables
+                WHERE table_name = 'carta'
+            """
+
+            with self._conn.cursor() as cur:
+                cur.execute(sql_check)
+                existe = cur.fetchone()
+
+            if not existe:
+                self._executar_sql_criacao()
+
+        except Exception:
+            # Fallback para bancos sem information_schema (ex: SQLite)
+            self._executar_sql_criacao()
+
+    def _executar_sql_criacao(self):
+        root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../infra/database/sql"))
+        sql_path = os.path.join(root_path, "TableCarta.sql")
+
+        with open(sql_path, "r", encoding="utf-8") as f:
+            sql = f.read()
+
+        with self._conn.cursor() as cur:
+            cur.execute(sql)
+
+        self._conn.commit()
+
+    # -----------------------------
+    # CREATE
+    # -----------------------------
+    def criar(self, carta: CartaEntity) -> None:
+        sql = """
+            INSERT INTO carta (
+                fundo,
+                personagem,
+                borda,
+                atr_for,
+                atr_des,
+                atr_con,
+                atr_int,
+                atr_sab,
+                atr_car,
+                dono
+            )
+            VALUES (
+                %s, %s, %s, %s, %s,
+                %s, %s, %s, %s, %s
+            )
+            RETURNING id;
+        """
+
+        with self._conn.cursor() as cur:
+            cur.execute(sql, (
+                carta.get_fundo(),
+                carta.get_personagem(),
+                carta.get_borda(),
+                carta.get_atributo("for"),
+                carta.get_atributo("des"),
+                carta.get_atributo("con"),
+                carta.get_atributo("int"),
+                carta.get_atributo("sab"),
+                carta.get_atributo("car"),
+                carta.get_dono()
+            ))
+            carta_id = cur.fetchone()[0]
+
+        self._conn.commit()
+        carta.set_id(carta_id)
+        return carta_id
+
+    # -----------------------------
+    # READ ONE
+    # -----------------------------
+    def buscar_por_id(self, cod: int) -> CartaEntity | None:
+        sql = """
+            SELECT 
+                id,
+                fundo,
+                personagem,
+                borda,
+                atr_for,
+                atr_des,
+                atr_con,
+                atr_int,
+                atr_sab,
+                atr_car,
+                dono
+            FROM carta
+            WHERE id = %s
+        """
+
+        with self._conn.cursor() as cur:
+            cur.execute(sql, (cod,))
+            row = cur.fetchone()
+
+        if not row:
+            return None
+
+        stats = {
+            "for": row[4],
+            "des": row[5],
+            "con": row[6],
+            "int": row[7],
+            "sab": row[8],
+            "car": row[9],
+        }
+
+        return CartaEntity(
+            cod=row[0],
+            fundo=row[1],
+            personagem=row[2],
+            borda=row[3],
+            stats=stats,
+            dono=row[10]
+        )
+
+    # -----------------------------
+    # READ ALL BY USER
+    # -----------------------------
+    def listar_por_usuario(self, id_usuario: str) -> list[CartaEntity]:
+        sql = """
+            SELECT 
+                id,
+                fundo,
+                personagem,
+                borda,
+                atr_for,
+                atr_des,
+                atr_con,
+                atr_int,
+                atr_sab,
+                atr_car,
+                dono
+            FROM carta
+            WHERE dono = %s
+        """
+
+        cartas = []
+        with self._conn.cursor() as cur:
+            cur.execute(sql, (id_usuario,))
+            rows = cur.fetchall()
+
+        for row in rows:
+            stats = {
+                "for": row[4],
+                "des": row[5],
+                "con": row[6],
+                "int": row[7],
+                "sab": row[8],
+                "car": row[9],
+            }
+
+            cartas.append(CartaEntity(
+                cod=row[0],
+                fundo=row[1],
+                personagem=row[2],
+                borda=row[3],
+                stats=stats,
+                dono=row[10]
+            ))
+
+        return cartas
+
+    # -----------------------------
+    # TODOS POR USUARIO COM FILTRO
+    # -----------------------------
+    def buscar_por_usuario_filtrado(self, id_usuario: str, filtro: dict) -> list[CartaEntity]:
+        sql = """
+            SELECT 
+                id,
+                fundo,
+                personagem,
+                borda,
+                atr_for,
+                atr_des,
+                atr_con,
+                atr_int,
+                atr_sab,
+                atr_car,
+                dono
+            FROM carta
+            WHERE 
+                dono = %s AND
+                fundo = ANY(%s) AND
+                personagem = ANY(%s) AND
+                borda = ANY(%s)
+                ORDER BY 
+            CASE borda
+                WHEN 'Perfeito' THEN 1
+                WHEN 'Top'      THEN 2
+                WHEN 'Ótimo'    THEN 3
+                WHEN 'Bom'      THEN 4
+                WHEN 'Comum'    THEN 5
+                ELSE 6
+            END,
+            personagem ASC,
+            fundo ASC
+        """
+
+        cartas = []
+        with self._conn.cursor() as cur:
+            cur.execute(sql, (
+                id_usuario,
+                filtro["fundos"],
+                filtro["personagens"],
+                filtro["bordas"]
+            ))
+            rows = cur.fetchall()
+
+        for row in rows:
+            stats = {
+                "for": row[4],
+                "des": row[5],
+                "con": row[6],
+                "int": row[7],
+                "sab": row[8],
+                "car": row[9],
+            }
+
+            cartas.append(CartaEntity(
+                cod=row[0],
+                fundo=row[1],
+                personagem=row[2],
+                borda=row[3],
+                stats=stats,
+                dono=row[10]
+            ))
+
+        return cartas
+
+    # -----------------------------
+    # LISTA OS TIPOS DE FUNDO, PERSONAGEM E BORDA DE UM JOGADOR
+    # -----------------------------
+    def listar_tipos(self, id_dono: int) -> dict:
+        return {
+            "fundos": self.listar_tipos_fundo(id_dono),
+            "personagens": self.listar_tipos_personagem(id_dono),
+            "bordas": self.listar_tipos_borda(id_dono)
+        }
+
+    def listar_tipos_fundo(self, id_dono: int) -> list[str]:
+        sql = """
+            SELECT DISTINCT fundo
+            FROM carta
+            WHERE dono = %s
+            ORDER BY fundo;
+        """
+        with self._conn.cursor() as cur:
+            cur.execute(sql, (id_dono,))
+            rows = cur.fetchall()
+        return [row[0] for row in rows]
+
+    def listar_tipos_personagem(self, id_dono: int) -> list[str]:
+        sql = """
+            SELECT DISTINCT personagem
+            FROM carta
+            WHERE dono = %s
+            ORDER BY personagem;
+        """
+        with self._conn.cursor() as cur:
+            cur.execute(sql, (id_dono,))
+            rows = cur.fetchall()
+        return [row[0] for row in rows]
+
+    def listar_tipos_borda(self, id_dono: int) -> list[str]:
+        sql = """
+            SELECT DISTINCT borda
+            FROM carta
+            WHERE dono = %s
+            ORDER BY borda;
+        """
+        with self._conn.cursor() as cur:
+            cur.execute(sql, (id_dono,))
+            rows = cur.fetchall()
+        return [row[0] for row in rows]
+
+    # -----------------------------
+    # DELETE
+    # -----------------------------
+    def deletar(self, id_carta: int) -> bool:
+        sql = """
+            DELETE FROM carta
+            WHERE id = %s
+        """
+
+        with self._conn.cursor() as cur:
+            cur.execute(sql, (id_carta,))
+            deletado = cur.rowcount > 0
+
+        self._conn.commit()
+        return deletado
+
+    # -----------------------------
+    # UPDATE
+    # -----------------------------
+    def atualizar(self, carta: CartaEntity) -> bool:
+        sql = """
+            UPDATE carta
+            SET 
+                fundo = %s,
+                personagem = %s,
+                borda = %s,
+                atr_for = %s,
+                atr_des = %s,
+                atr_con = %s,
+                atr_int = %s,
+                atr_sab = %s,
+                atr_car = %s
+            WHERE id = %s
+        """
+
+        with self._conn.cursor() as cur:
+            cur.execute(sql, (
+                carta.get_fundo(),
+                carta.get_personagem(),
+                carta.get_borda(),
+                carta.get_atributo("for"),
+                carta.get_atributo("des"),
+                carta.get_atributo("con"),
+                carta.get_atributo("int"),
+                carta.get_atributo("sab"),
+                carta.get_atributo("car"),
+                carta.get_id()
+            ))
+            atualizado = cur.rowcount > 0
+
+        self._conn.commit()
+        return atualizado

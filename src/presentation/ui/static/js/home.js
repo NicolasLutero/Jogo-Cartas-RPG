@@ -7,33 +7,50 @@ fetch("/api/usuario/status-diario")
         return;
     }
 
-    const data = res.data; // <- aqui estão os valores verdadeiros
+    const data = res.data;
 
     const reforjar = document.getElementById("reforjar");
     const cartas = document.getElementById("cartas_diarias");
     const fundir = document.getElementById("fundir");
 
-    // Mapa de status
-    const mapa = {
-        reforjar: data.reforjar,
-        cartas_diarias: data.cartas_diarias,
-        fundir: data.fundir
-    };
-
-    Object.keys(mapa).forEach(id => {
-        const card = document.getElementById(id);
-        const disponivel = mapa[id];
-
-        if (!disponivel) {
-            card.classList.add("bloqueado");
-        }
-
-        card.addEventListener("click", () => {
-            if (!disponivel) return;
-            const rota = card.getAttribute("data-rota");
-            window.location.href = rota;
+    // --- Reforjar ---
+    if (!data.reforjar) {
+        reforjar.classList.add("bloqueado");
+        reforjar.addEventListener("click", () => {});
+    } else {
+        reforjar.addEventListener("click", () => {
+            window.location.href = reforjar.getAttribute("data-rota");
         });
-    });
+    }
+
+    // --- Fundir ---
+    if (!data.fundir) {
+        fundir.classList.add("bloqueado");
+        fundir.addEventListener("click", () => {});
+    } else {
+        fundir.addEventListener("click", () => {
+            window.location.href = fundir.getAttribute("data-rota");
+        });
+    }
+
+    // --- Cartas Diárias ---
+    if (!data.cartas_diarias) {
+        // 🔁 Substitui card por Inventário
+        cartas.id = "inventario";
+        cartas.className = "card inventario";   // remove estilos antigos
+        cartas.innerHTML = "<span>Inventário</span>";
+        cartas.setAttribute("data-rota", "/inventario");
+
+        cartas.addEventListener("click", () => {
+            window.location.href = "/inventario";
+        });
+
+    } else {
+        // normal
+        cartas.addEventListener("click", () => {
+            window.location.href = cartas.getAttribute("data-rota");
+        });
+    }
 
 })
 .catch(err => {

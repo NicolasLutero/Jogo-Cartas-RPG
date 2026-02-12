@@ -1,0 +1,176 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden; /* remove scroll global */
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: radial-gradient(circle at top, #f0f0f0, #dcdcdc);
+}
+
+/* ===== Layout ===== */
+
+.container {
+    height: 100vh;
+    padding: 18px 26px 16px 26px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Mensagem */
+
+.mensagem {
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #444;
+    min-height: 22px;
+}
+
+/* Wrapper para controlar altura das cartas */
+
+.cartas-wrapper {
+    flex: 1;
+    display: flex;
+}
+
+/* ===== Grid ===== */
+
+.cartas-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+    width: 100%;
+    height: 100%;
+}
+
+/* ===== Carta ===== */
+
+.carta {
+    background: linear-gradient(180deg, #ffffff, #f3f3f3);
+    border-radius: 16px;
+    border: 2px solid rgba(0,0,0,0.18);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+
+    transition:
+        box-shadow 0.25s ease,
+        border-color 0.25s ease,
+        filter 0.25s ease,
+        background 0.25s ease;
+    position: relative;
+}
+
+/* Efeito de luz dinâmica */
+.carta::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        circle at var(--x, 50%) var(--y, 50%),
+        rgba(255,255,255,0.25),
+        transparent 45%
+    );
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+}
+
+.carta:hover {
+    box-shadow:
+        0 10px 26px rgba(0,0,0,0.28),
+        inset 0 0 12px rgba(255,255,255,0.35);
+    border-color: rgba(44, 123, 229, 0.6);
+    filter: brightness(1.02);
+    background: linear-gradient(180deg, #ffffff, #eeeeee);
+}
+
+.carta:hover::after {
+    opacity: 1;
+}
+
+/* ===== Título ===== */
+
+.titulo {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #222;
+}
+
+/* ===== Imagem ===== */
+
+.imagem-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    margin: 6px 0;
+}
+
+.imagem-carta {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 30px;
+    border: 2px solid rgba(0,0,0,0.75);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* ===== Stats ===== */
+
+.stats {
+    font-size: 12px;
+    background: rgba(0,0,0,0.04);
+    border-radius: 10px;
+    padding: 6px 8px;
+}
+
+.stats div {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+}
+
+.stats span:first-child {
+    font-weight: 600;
+}
+
+/* ===== Ações ===== */
+
+.acoes {
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+}
+
+/* ===== Botão ===== */
+
+#btn-receber {
+    padding: 10px 36px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(180deg, #2c7be5, #1f5fb5);
+    color: white;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+    transition: 0.2s;
+}
+
+#btn-receber:hover {
+    filter: brightness(1.08);
+    transform: translateY(-2px);
+}

@@ -50,6 +50,11 @@ body {
     border-color: #7a2222;
 }
 
+#inventario {
+    background-color: #6f42c1;   /* roxo */
+    border-color: #4e2c91;
+}
+
 /* Hover */
 .card:hover {
     filter: brightness(1.08);

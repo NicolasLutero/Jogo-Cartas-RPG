@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cartas Diárias</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cartas_diarias.css') }}">
+</head>
+<body>
+
+<main class="container">
+    <div id="mensagem" class="mensagem"></div>
+
+    <section class="cartas-wrapper">
+        <div id="cartas" class="cartas-container"></div>
+    </section>
+
+    <footer class="acoes">
+        <button id="btn-receber">Receber</button>
+    </footer>
+</main>
+
+<script src="{{ url_for('static', filename='js/cartas_diarias.js') }}"></script>
+</body>
+</html>

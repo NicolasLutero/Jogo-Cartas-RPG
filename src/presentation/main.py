@@ -2,8 +2,8 @@ from flask import Flask
 
 from routes.SiteRoutes import site_bp
 from routes.LoginCadastroRoutes import login_cadastro_bp
-from routes.UsuarioRoutes import usuario_bp
-blueprints = [site_bp, login_cadastro_bp, usuario_bp]
+from routes.MecanicaRoutes import mecanica_bp
+blueprints = [site_bp, login_cadastro_bp, mecanica_bp]
 
 class Server(Flask):
     def __init__(self, import_name: str):

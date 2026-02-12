@@ -3,9 +3,9 @@ from math import sqrt
 from pathlib import Path
 
 
-class GeradorImagemCarta:
+class ImagemCartaGenerator:
     _instance = None
-    ROOT = Path(__file__).resolve().parents[2]  # ajuste níveis se necessário
+    ROOT = Path(__file__).resolve().parents[3]  # ajuste níveis se necessário
 
 
     def __new__(cls):

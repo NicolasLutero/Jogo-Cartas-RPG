@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventário</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/inventario.css') }}">
+</head>
+<body>
+
+<main class="container">
+
+    <!-- Filtro -->
+    <section class="filtro">
+        <div class="filtro-header" id="filtroToggle">
+            <span>Filtros</span>
+            <span id="filtroIcon">▼</span>
+        </div>
+
+        <div class="filtro-body" id="filtroBody">
+            <div class="filtro-coluna">
+                <h4>Cenário</h4>
+                <div id="filtroFundos"></div>
+            </div>
+
+            <div class="filtro-coluna">
+                <h4>Personagem</h4>
+                <div id="filtroPersonagens"></div>
+            </div>
+
+            <div class="filtro-coluna">
+                <h4>Raridade</h4>
+                <div id="filtroBordas"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cartas-wrapper">
+        <div id="cartas" class="cartas-container"></div>
+    </section>
+
+</main>
+
+<script src="{{ url_for('static', filename='js/inventario.js') }}"></script>
+</body>
+</html>

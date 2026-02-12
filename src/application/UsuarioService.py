@@ -1,10 +1,12 @@
-from src.domain.UsuarioVO import UsuarioVO
+from src.domain.service.CartaService import CartaService
+from src.domain.entity.UsuarioEntity import UsuarioEntity
+from src.infra.dao.CartaDAO import CartaDAO
 from src.infra.dao.UsuarioDAO import UsuarioDAO
 
 from datetime import date
 
 
-class ControleUsuario:
+class UsuarioService:
     _instance = None
 
     def __new__(cls):
@@ -18,7 +20,10 @@ class ControleUsuario:
     # CREATE
     # -----------------------------
     def criar_usuario(self, usuario_dict: dict) -> None:
-        usuario = UsuarioVO.from_dict(usuario_dict)
+        nome = usuario_dict["nome"]
+        senha = usuario_dict["senha"]
+
+        usuario = UsuarioEntity(None, nome, senha, None, None, None, None)
         UsuarioDAO().criar(usuario)
         self._cache[usuario.get_nome()] = usuario
 
@@ -63,19 +68,10 @@ class ControleUsuario:
         return None
 
     # -----------------------------
-    # DELETE
-    # -----------------------------
-    def deletar_usuario(self, nome: str) -> bool:
-        if UsuarioDAO().deletar(nome):
-            self._cache.pop(nome, None)
-            return True
-        return False
-
-    # -----------------------------
     # UPDATE (opcional futuramente)
     # -----------------------------
     def atualizar_usuario(self, usuario_dict: dict) -> bool:
-        usuario = UsuarioVO.from_dict(usuario_dict)
+        usuario = UsuarioEntity.from_dict(usuario_dict)
         ok = UsuarioDAO().atualizar(usuario)
         if ok:
             self._cache[usuario.get_nome()] = usuario
@@ -85,7 +81,7 @@ class ControleUsuario:
     # VERIFICA AÇÕES DISPONIVEIS
     # --------------------------
     def acoes_disponiveis(self, nome):
-        hoje = date.today()
+        hoje = str(date.today())
 
         usuario = self.buscar_usuario_dict(nome)
 
@@ -130,3 +126,16 @@ class ControleUsuario:
         # Persiste no banco
         self.atualizar_usuario(usuario)
         return True
+
+    # -------------------------
+    # COLETAR CARTAS
+    # -------------------------
+    def coletar_cartas(self, nome):
+        usuario = UsuarioDAO().buscar_por_nome(nome)
+
+        cartas = [CartaService().carta_aleatoria(usuario.get_id(), usuario.get_fator_n()) for _ in range(5)]
+        for carta in cartas:
+            CartaDAO().criar(carta)
+        self.marcar_acao(nome, "cartas_diarias")
+
+        return [carta.to_dict() for carta in cartas]
