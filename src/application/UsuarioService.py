@@ -109,17 +109,16 @@ class UsuarioService:
 
         # Busca usuário no banco
         usuario = self.buscar_usuario_dict(nome)
-
         if not usuario:
             return "Usuario não encontrado"
 
         # Atualiza campo correto
         if acao == "reforjar":
-            usuario["data_reforjar"] = hoje
+            usuario["data_reforjar"] = str(hoje)
         elif acao == "cartas_diarias":
-            usuario["data_cartas_diarias"] = hoje
+            usuario["data_cartas_diarias"] = str(hoje)
         elif acao == "fundicao":
-            usuario["data_fundir"] = hoje
+            usuario["data_fundir"] = str(hoje)
         else:
             return "Ação inválida"
 
@@ -127,9 +126,9 @@ class UsuarioService:
         self.atualizar_usuario(usuario)
         return True
 
-    # -------------------------
+    # -----------------------------
     # COLETAR CARTAS
-    # -------------------------
+    # -----------------------------
     def coletar_cartas(self, nome):
         usuario = UsuarioDAO().buscar_por_nome(nome)
 
@@ -138,4 +137,4 @@ class UsuarioService:
             CartaDAO().criar(carta)
         self.marcar_acao(nome, "cartas_diarias")
 
-        return [carta.to_dict() for carta in cartas]
+        return [CartaService().para_client(carta) for carta in cartas]

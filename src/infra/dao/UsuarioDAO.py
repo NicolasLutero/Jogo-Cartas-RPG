@@ -113,9 +113,9 @@ class UsuarioDAO:
             nome=row[1],
             senha_hash=row[2],
             fator_n=float(row[3]),
-            data_reforjar=row[4],
-            data_cartas_diarias=row[5],
-            data_fundir=row[6]
+            data_reforjar=str(row[4]) if row[4] is not None else row[4],
+            data_cartas_diarias=str(row[5]) if row[5] is not None else row[5],
+            data_fundir=str(row[6]) if row[6] is not None else row[6]
         )
 
     # -----------------------------

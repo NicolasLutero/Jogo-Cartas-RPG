@@ -70,9 +70,9 @@ class UsuarioEntity:
             "nome": self._nome,
             "senha": self._senha,
             "fator_n": self._fator_n,
-            "data_reforjar": self._data_reforjar.isoformat() if self._data_reforjar else None,
-            "data_cartas_diarias": self._data_cartas_diarias.isoformat() if self._data_cartas_diarias else None,
-            "data_fundir": self._data_fundir.isoformat() if self._data_fundir else None
+            "data_reforjar": self._data_reforjar if self._data_reforjar else None,
+            "data_cartas_diarias": self._data_cartas_diarias if self._data_cartas_diarias else None,
+            "data_fundir": self._data_fundir if self._data_fundir else None
         }
 
     @staticmethod

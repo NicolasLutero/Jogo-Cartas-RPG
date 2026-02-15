@@ -54,12 +54,12 @@ fetch("/api/usuario/cartas-diarias")
             </div>
 
             <div class="stats">
-                <div><span>Força</span><span>${c.stats.for}</span></div>
-                <div><span>Destreza</span><span>${c.stats.des}</span></div>
-                <div><span>Constituição</span><span>${c.stats.con}</span></div>
-                <div><span>Inteligência</span><span>${c.stats.int}</span></div>
-                <div><span>Sabedoria</span><span>${c.stats.sab}</span></div>
-                <div><span>Carisma</span><span>${c.stats.car}</span></div>
+                <div><span>Força</span><span>${c.stats.for[0]} (${c.stats.for[1]}%)</span></div>
+                <div><span>Destreza</span><span>${c.stats.des[0]} (${c.stats.des[1]}%)</span></div>
+                <div><span>Constituição</span><span>${c.stats.con[0]} (${c.stats.con[1]}%)</span></div>
+                <div><span>Inteligência</span><span>${c.stats.int[0]} (${c.stats.int[1]}%)</span></div>
+                <div><span>Sabedoria</span><span>${c.stats.sab[0]} (${c.stats.sab[1]}%)</span></div>
+                <div><span>Carisma</span><span>${c.stats.car[0]} (${c.stats.car[1]}%)</span></div>
             </div>
         `;
 

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Reforja</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reforja.css') }}">
+</head>
+<body>
+
+<main class="container-reforja">
+
+    <!-- Painel Esquerdo -->
+    <section class="painel-esquerdo">
+
+        <!-- Carta 1 (fixa e clicável) -->
+        <div class="carta carta-ativa" id="carta-selecao">
+            <h3 class="titulo">Carta Vazia</h3>
+
+            <div class="imagem-container">
+                <div class="placeholder">?</div>
+            </div>
+
+            <div class="stats">
+                <div><span>Força</span><span>0.00 (00%)</span></div>
+                <div><span>Destreza</span><span>0.00 (00%)</span></div>
+                <div><span>Constituição</span><span>0.00 (00%)</span></div>
+                <div><span>Inteligência</span><span>0.00 (00%)</span></div>
+                <div><span>Sabedoria</span><span>0.00 (00%)</span></div>
+                <div><span>Carisma</span><span>0.00 (00%)</span></div>
+            </div>
+        </div>
+
+        <!-- Carta 2 (vazia) -->
+        <div class="carta carta-vazia" id="carta-resultado">
+            <h3 class="titulo">Resultado</h3>
+
+            <div class="imagem-container">
+                <div class="placeholder">?</div>
+            </div>
+
+            <div class="stats">
+                <div><span>Força</span><span>0.00 (00%)</span></div>
+                <div><span>Destreza</span><span>0.00 (00%)</span></div>
+                <div><span>Constituição</span><span>0.00 (00%)</span></div>
+                <div><span>Inteligência</span><span>0.00 (00%)</span></div>
+                <div><span>Sabedoria</span><span>0.00 (00%)</span></div>
+                <div><span>Carisma</span><span>0.00 (00%)</span></div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Painel Direito -->
+    <section class="painel-direito">
+        <button class="btn-reforjar" id="btn-reforjar">REFORJAR</button>
+    </section>
+
+</main>
+
+<script src="{{ url_for('static', filename='js/reforja.js') }}"></script>
+</body>
+</html>

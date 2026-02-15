@@ -19,6 +19,7 @@ fetch("/api/usuario/status-diario")
         reforjar.addEventListener("click", () => {});
     } else {
         reforjar.addEventListener("click", () => {
+            localStorage.removeItem("cartaForja");
             window.location.href = reforjar.getAttribute("data-rota");
         });
     }

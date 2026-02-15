@@ -1,3 +1,7 @@
+// ===== Verifica se deve retornar algo =====
+const retornoInventario = localStorage.getItem("retornoInventario");
+
+// Pegando elementos do cocument
 const cartasContainer = document.getElementById("cartas");
 const filtroToggle = document.getElementById("filtroToggle");
 const filtroIcon = document.getElementById("filtroIcon");
@@ -140,6 +144,7 @@ function carregarCartas(){
         };
 
         res.cartas.forEach(c => {
+            // Gerando Div da Carta
             const div = document.createElement("div");
             div.classList.add("carta");
 
@@ -151,12 +156,12 @@ function carregarCartas(){
                 </div>
 
                 <div class="stats">
-                    <div><span>Força</span><span>${c.stats.for}</span></div>
-                    <div><span>Destreza</span><span>${c.stats.des}</span></div>
-                    <div><span>Constituição</span><span>${c.stats.con}</span></div>
-                    <div><span>Inteligência</span><span>${c.stats.int}</span></div>
-                    <div><span>Sabedoria</span><span>${c.stats.sab}</span></div>
-                    <div><span>Carisma</span><span>${c.stats.car}</span></div>
+                    <div><span>Força</span><span>${c.stats.for[0]} (${c.stats.for[1]}%)</span></div>
+                    <div><span>Destreza</span><span>${c.stats.des[0]} (${c.stats.des[1]}%)</span></div>
+                    <div><span>Constituição</span><span>${c.stats.con[0]} (${c.stats.con[1]}%)</span></div>
+                    <div><span>Inteligência</span><span>${c.stats.int[0]} (${c.stats.int[1]}%)</span></div>
+                    <div><span>Sabedoria</span><span>${c.stats.sab[0]} (${c.stats.sab[1]}%)</span></div>
+                    <div><span>Carisma</span><span>${c.stats.car[0]} (${c.stats.car[1]}%)</span></div>
                 </div>
             `;
 
@@ -173,6 +178,7 @@ function carregarCartas(){
 
             cartasContainer.appendChild(div);
 
+            // Pegando imagem da carta
             const key = `${c.personagem}|${c.fundo}|${c.borda}`;
             if (imageCache.has(key)) {
                 // usa do cache
@@ -198,6 +204,25 @@ function carregarCartas(){
                 .catch(err => {
                     console.error("Erro ao buscar imagem:", err);
                 });
+            }
+
+            // Evento de click da carta
+            if (retornoInventario) {
+                if (retornoInventario === "selecionandoCartaReforja") {
+                    div.addEventListener("click", () => {
+                        localStorage.removeItem("retornoInventario")
+                        localStorage.setItem("cartaForja", c.id);
+                        window.location.href='/reforja';
+                    });
+                }
+
+                else if (retornoInventario === "selecionandoCartaFundicao1") {
+                    // CASO B
+                }
+
+                else if (retornoInventario === "selecionandoCartaFundicao2") {
+                    // CASO C
+                }
             }
         });
     });

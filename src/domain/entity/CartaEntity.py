@@ -9,7 +9,8 @@ class CartaEntity:
         fundo: str,
         personagem: str,
         borda: str,
-        stats: Dict[str, float],
+        stats: Dict[str, list],
+        bonus,
         dono: int
     ):
         self._cod = cod
@@ -17,6 +18,7 @@ class CartaEntity:
         self._personagem = personagem
         self._borda = borda
         self._stats = stats
+        self._bonus = bonus
         self._dono = dono
 
     # -------- GETTERS --------
@@ -35,11 +37,14 @@ class CartaEntity:
     def get_borda(self):
         return self._borda
 
+    def get_bonus(self):
+        return self._bonus
+
     def get_stats(self):
         return self._stats
 
-    def get_atributo(self, atr: str) -> float:
-        return self._stats.get(atr, 0.0)
+    def get_atributo(self, atr: str) -> list:
+        return sum(self._stats[atr]) + self._bonus
 
     def get_dono(self) -> int:
         return self._dono
@@ -48,19 +53,22 @@ class CartaEntity:
     def set_id(self, cod):
         self._cod = cod
 
-    def set_cenario(self, fundo: str):
+    def set_fundo(self, fundo: str):
         self._fundo = fundo
 
     def set_personagem(self, personagem: str):
         self._personagem = personagem
 
-    def set_raridade(self, borda: str):
+    def set_borda(self, borda: str):
         self._borda = borda
+
+    def set_bonus(self, bonus: int):
+        self._bonus = bonus
 
     def set_stats(self, stats: Dict[str, float]):
         self._stats = stats
 
-    def set_atributo(self, atr: str, valor: float):
+    def set_atributo(self, atr: str, valor: list):
         self._stats[atr] = valor
 
     # -------- SERIALIZAÇÃO --------
@@ -72,6 +80,7 @@ class CartaEntity:
             "personagem": self._personagem,
             "borda": self._borda,
             "stats": dict(self._stats),
+            "bonus": self._bonus,
             "dono": self._dono
         }
 
@@ -83,6 +92,7 @@ class CartaEntity:
             dados["personagem"],
             dados["borda"],
             dict(dados.get("stats", {})),
+            dados["bonus"],
             dados["dono"]
         )
 

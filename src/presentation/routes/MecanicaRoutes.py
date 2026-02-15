@@ -42,13 +42,40 @@ def buscar_cartas_usuario():
     dados = request.get_json() or {}
 
     # lista de personagens selecionados
-    tipos = dict(dados)
+    tipos_filtro = dict(dados)
 
-    cartas = InventarioService().buscar_cartas_usuario(nome, tipos)
+    cartas = InventarioService().buscar_cartas_usuario(nome, tipos_filtro)
 
     return jsonify({
         "sucesso": True,
         "cartas": cartas
+    }), 200
+
+@mecanica_bp.route("/api/inventario/carta/", methods=["POST"])
+def buscar_carta_id():
+    if "usuario" not in session:
+        return jsonify({
+            "sucesso": False,
+            "mensagem": "Não autenticado"
+        }), 401
+
+    nome = session["usuario"]["nome"]
+    dados = request.get_json() or {}
+
+    # id da carta requerida
+    id_carta = dict(dados)["id"]
+
+    carta = InventarioService().buscar_carta_usuario(nome, id_carta)
+
+    if carta is None:
+        return jsonify({
+            "sucesso": False,
+            "mensagem": "Carta não encontrada"
+        }), 404
+
+    return jsonify({
+        "sucesso": True,
+        "carta": carta
     }), 200
 
 
@@ -116,4 +143,53 @@ def coletar_cartas():
     return jsonify({
         "sucesso": True,
         "cartas": cartas
+    }), 200
+
+
+# ---------------------------------
+# REFORJAR CARTA
+# ---------------------------------
+@mecanica_bp.route("/api/usuario/reforja/", methods=["POST"])
+def refojar_carta():
+    if "usuario" not in session:
+        return jsonify({
+            "sucesso": False,
+            "mensagem": "Não autenticado"
+        }), 401
+
+    nome = session["usuario"]["nome"]
+    dados = request.get_json() or {}
+
+    # id da carta escolhida
+    id_carta = dict(dados)["id"]
+
+    # Verifica disponibilidade no banco
+    status = UsuarioService().acoes_disponiveis(nome)
+
+    if not status:
+        return jsonify({
+            "sucesso": False,
+            "mensagem": "Usuário não encontrado"
+        }), 404
+
+    # Se já usou hoje
+    if not status["reforjar"]:
+        return jsonify({
+            "sucesso": False,
+            "mensagem": "Reforjar já foi usado hoje"
+        }), 403
+
+    # Gera as cartas
+    carta_reforjada = InventarioService().reforjar_carta(nome, id_carta)
+
+    # Se a carta não pertence ao usuário
+    if carta_reforjada is None:
+        return jsonify({
+            "sucesso": False,
+            "mensagem": "Carta não pertence ao usuário"
+        }), 404
+
+    return jsonify({
+        "sucesso": True,
+        "carta": carta_reforjada
     }), 200

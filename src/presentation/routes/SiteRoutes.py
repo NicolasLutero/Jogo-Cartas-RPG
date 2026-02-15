@@ -34,9 +34,9 @@ def inventario():
 def fundicao():
     return render_template("fundicao.html")
 
-@site_bp.route("/reforjar", methods=["GET"])
+@site_bp.route("/reforja", methods=["GET"])
 def reforjar():
-    return render_template("reforjar.html")
+    return render_template("reforja.html")
 
 # --- Imagens das Cartas ---
 @site_bp.route("/img", methods=["POST"])
@@ -72,7 +72,6 @@ def gerar_imagem_carta():
         }), 200
 
     except Exception as e:
-        print(e)
         return jsonify({
             "sucesso": False,
             "mensagem": "Erro ao gerar imagem",

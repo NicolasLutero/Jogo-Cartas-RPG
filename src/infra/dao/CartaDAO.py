@@ -63,26 +63,49 @@ class CartaDAO:
                 atr_int,
                 atr_sab,
                 atr_car,
+                var_for,
+                var_des,
+                var_con,
+                var_int,
+                var_sab,
+                var_car,
+                bonus,
                 dono
             )
             VALUES (
                 %s, %s, %s, %s, %s,
-                %s, %s, %s, %s, %s
+                %s, %s, %s, %s, %s,
+                %s, %s, %s, %s, %s,
+                %s, %s
             )
             RETURNING id;
         """
 
         with self._conn.cursor() as cur:
+            status = []
+            variacoes = []
+            atributos = carta.get_stats()
+            for c in ["for", "des", "con", "int", "sab", "car"]:
+                status.append(atributos[c][0])
+                variacoes.append(atributos[c][1])
+
             cur.execute(sql, (
                 carta.get_fundo(),
                 carta.get_personagem(),
                 carta.get_borda(),
-                carta.get_atributo("for"),
-                carta.get_atributo("des"),
-                carta.get_atributo("con"),
-                carta.get_atributo("int"),
-                carta.get_atributo("sab"),
-                carta.get_atributo("car"),
+                status[0],
+                status[1],
+                status[2],
+                status[3],
+                status[4],
+                status[5],
+                variacoes[0],
+                variacoes[1],
+                variacoes[2],
+                variacoes[3],
+                variacoes[4],
+                variacoes[5],
+                carta.get_bonus(),
                 carta.get_dono()
             ))
             carta_id = cur.fetchone()[0]
@@ -107,6 +130,13 @@ class CartaDAO:
                 atr_int,
                 atr_sab,
                 atr_car,
+                var_for,
+                var_des,
+                var_con,
+                var_int,
+                var_sab,
+                var_car,
+                bonus,
                 dono
             FROM carta
             WHERE id = %s
@@ -120,12 +150,12 @@ class CartaDAO:
             return None
 
         stats = {
-            "for": row[4],
-            "des": row[5],
-            "con": row[6],
-            "int": row[7],
-            "sab": row[8],
-            "car": row[9],
+            "for": [int(row[4]), float(row[10])],
+            "des": [int(row[5]), float(row[11])],
+            "con": [int(row[6]), float(row[12])],
+            "int": [int(row[7]), float(row[13])],
+            "sab": [int(row[8]), float(row[14])],
+            "car": [int(row[9]), float(row[15])],
         }
 
         return CartaEntity(
@@ -134,7 +164,8 @@ class CartaDAO:
             personagem=row[2],
             borda=row[3],
             stats=stats,
-            dono=row[10]
+            bonus=int(row[16]),
+            dono=row[17]
         )
 
     # -----------------------------
@@ -153,6 +184,13 @@ class CartaDAO:
                 atr_int,
                 atr_sab,
                 atr_car,
+                var_for,
+                var_des,
+                var_con,
+                var_int,
+                var_sab,
+                var_car,
+                bonus,
                 dono
             FROM carta
             WHERE dono = %s
@@ -165,12 +203,12 @@ class CartaDAO:
 
         for row in rows:
             stats = {
-                "for": row[4],
-                "des": row[5],
-                "con": row[6],
-                "int": row[7],
-                "sab": row[8],
-                "car": row[9],
+                "for": [int(row[4]), float(row[10])],
+                "des": [int(row[5]), float(row[11])],
+                "con": [int(row[6]), float(row[12])],
+                "int": [int(row[7]), float(row[13])],
+                "sab": [int(row[8]), float(row[14])],
+                "car": [int(row[9]), float(row[15])],
             }
 
             cartas.append(CartaEntity(
@@ -179,7 +217,8 @@ class CartaDAO:
                 personagem=row[2],
                 borda=row[3],
                 stats=stats,
-                dono=row[10]
+                bonus=int(row[16]),
+                dono=row[17]
             ))
 
         return cartas
@@ -200,6 +239,13 @@ class CartaDAO:
                 atr_int,
                 atr_sab,
                 atr_car,
+                var_for,
+                var_des,
+                var_con,
+                var_int,
+                var_sab,
+                var_car,
+                bonus,
                 dono
             FROM carta
             WHERE 
@@ -232,12 +278,12 @@ class CartaDAO:
 
         for row in rows:
             stats = {
-                "for": row[4],
-                "des": row[5],
-                "con": row[6],
-                "int": row[7],
-                "sab": row[8],
-                "car": row[9],
+                "for": [int(row[4]), float(row[10])],
+                "des": [int(row[5]), float(row[11])],
+                "con": [int(row[6]), float(row[12])],
+                "int": [int(row[7]), float(row[13])],
+                "sab": [int(row[8]), float(row[14])],
+                "car": [int(row[9]), float(row[15])],
             }
 
             cartas.append(CartaEntity(
@@ -246,10 +292,21 @@ class CartaDAO:
                 personagem=row[2],
                 borda=row[3],
                 stats=stats,
-                dono=row[10]
+                bonus=int(row[16]),
+                dono=row[17]
             ))
 
         return cartas
+
+    # -----------------------------
+    # BUSCAR CARTA DO USUARIO POR ID
+    # -----------------------------
+    def buscar_usuario_carta(self, id_usuario: str, id_carta: str) -> CartaEntity:
+        carta = self.buscar_por_id(id_carta)
+        if str(carta.get_dono()) == str(id_usuario):
+            return carta
+        else:
+            return None
 
     # -----------------------------
     # LISTA OS TIPOS DE FUNDO, PERSONAGEM E BORDA DE UM JOGADOR
@@ -328,21 +385,42 @@ class CartaDAO:
                 atr_con = %s,
                 atr_int = %s,
                 atr_sab = %s,
-                atr_car = %s
+                atr_car = %s,
+                var_for = %s,
+                var_des = %s,
+                var_con = %s,
+                var_int = %s,
+                var_sab = %s,
+                var_car = %s,
+                bonus = %s
             WHERE id = %s
         """
 
         with self._conn.cursor() as cur:
+            status = []
+            variacoes = []
+            atributos = carta.get_stats()
+            for c in ["for", "des", "con", "int", "sab", "car"]:
+                status.append(atributos[c][0])
+                variacoes.append(atributos[c][1])
+
             cur.execute(sql, (
                 carta.get_fundo(),
                 carta.get_personagem(),
                 carta.get_borda(),
-                carta.get_atributo("for"),
-                carta.get_atributo("des"),
-                carta.get_atributo("con"),
-                carta.get_atributo("int"),
-                carta.get_atributo("sab"),
-                carta.get_atributo("car"),
+                status[0],
+                status[1],
+                status[2],
+                status[3],
+                status[4],
+                status[5],
+                variacoes[0],
+                variacoes[1],
+                variacoes[2],
+                variacoes[3],
+                variacoes[4],
+                variacoes[5],
+                carta.get_bonus(),
                 carta.get_id()
             ))
             atualizado = cur.rowcount > 0
