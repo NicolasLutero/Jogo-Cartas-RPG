@@ -1,13 +1,22 @@
 # SiteRoutes.py
-import base64
-from io import BytesIO
 from flask import Blueprint, render_template, request, jsonify
+from io import BytesIO
+import base64
 
+# Application Class
 from src.domain.service.ImagemCartaGenerator import ImagemCartaGenerator
+imagem_carta_generator = ImagemCartaGenerator()
 
+# Exceptions
+from src.presentation.exception.PresentationException import *
+
+# Blueprint
 site_bp = Blueprint("site", __name__)
 
-# --- Autenticação ---
+
+# -----------------------------------------------
+# AUTENTIFICAÇÃO
+# -----------------------------------------------
 @site_bp.route("/", methods=["GET"])
 def login():
     return render_template("login.html")
@@ -16,12 +25,16 @@ def login():
 def cadastro():
     return render_template("cadastro.html")
 
-# --- Home ---
+# -----------------------------------------------
+# HOME
+# -----------------------------------------------
 @site_bp.route("/home", methods=["GET"])
 def home():
     return render_template("home.html")
 
-# --- Funcionalidades ---
+# -----------------------------------------------
+# FUNCIONALIDADES
+# -----------------------------------------------
 @site_bp.route("/cartas_diarias", methods=["GET"])
 def cartas_diarias():
     return render_template("cartas_diarias.html")
@@ -38,32 +51,29 @@ def fundicao():
 def reforjar():
     return render_template("reforja.html")
 
-# --- Imagens das Cartas ---
+# -----------------------------------------------
+# ACESSO AO GERADOR DE IMAGEM
+# -----------------------------------------------
 @site_bp.route("/img", methods=["POST"])
 def gerar_imagem_carta():
-    data = request.get_json()
+    dados = request.get_json()
+    if not dados:
+        raise DadosInvalidosException()
 
-    fundo = data.get("fundo")
-    personagem = data.get("personagem")
-    borda = data.get("borda")
+    fundo = dados.get("fundo")
+    personagem = dados.get("personagem")
+    borda = dados.get("borda")
 
-    # validação básica
     if not fundo or not personagem or not borda:
-        return jsonify({
-            "sucesso": False,
-            "mensagem": "Parâmetros inválidos"
-        }), 400
+        raise DadosFaltantesException
 
     try:
-        # gera imagem Pillow
-        img = ImagemCartaGenerator().gerar_carta(fundo, personagem, borda)
+        img = imagem_carta_generator.gerar_carta(fundo, personagem, borda)
 
-        # buffer
         buffer = BytesIO()
         img.save(buffer, format="PNG")
         buffer.seek(0)
 
-        # base64
         img_base64 = base64.b64encode(buffer.read()).decode("utf-8")
 
         return jsonify({

@@ -1,91 +1,61 @@
 # LoginCadastroRoutes.py
 from flask import Blueprint, request, jsonify, session
-from src.application.UsuarioService import UsuarioService
 import hashlib
 
+# Application Class
+from src.application.UsuarioUserCase import UsuarioUserCase
+usuario_user_case = UsuarioUserCase()
+
+# Exceptions
+from src.presentation.exception.PresentationException import *
+
+# Blueprint
 login_cadastro_bp = Blueprint("login_cadastro", __name__)
 
-# -----------------------------
-# Utilitário interno
-# -----------------------------
 
-def hash_senha(senha: str) -> str:
-    return hashlib.sha256(senha.encode("utf-8")).hexdigest()
+# -----------------------------------------------
+# AUXILIAR
+# -----------------------------------------------
+def hash_sha256(txt: str) -> str:
+    hash_txt = hashlib.sha256(txt.encode("utf-8"))
+    return hash_txt.hexdigest()
 
-# -----------------------------
-# Cadastro
-# -----------------------------
+def extrair_dados(dados, campos):
+    if not dados:
+        raise DadosInvalidosException()
+    dados_extraidor = [dados.get(campo) for campo in campos]
+    if any(dado is None for dado in dados_extraidor):
+        raise DadosFaltantesException()
+    return dados_extraidor
+
+
+# -----------------------------------------------
+# CADASTRO
+# -----------------------------------------------
 @login_cadastro_bp.route("/api/cadastro", methods=["POST"])
 def cadastrar_usuario():
     dados = request.get_json()
 
-    if not dados:
-        return jsonify({"sucesso": False, "mensagem": "Dados inválidos"}), 400
-
-    nome = dados.get("nome")
-    senha = dados.get("senha")
-
-    if not nome or not senha:
-        return jsonify({"sucesso": False, "mensagem": "Campos obrigatórios ausentes"}), 400
-
-    senha_hash = hash_senha(senha)
-
-    usuario = {
-        "nome": nome,
-        "senha": senha_hash
-    }
-
-    controle = UsuarioService()
-
-    if controle.usuario_existe(nome):
-        return jsonify({
-            "sucesso": False,
-            "mensagem": "Usuário já existe"
-        }), 409
-
-    controle.criar_usuario(usuario)
-
+    nome, senha = extrair_dados(dados, ["nome", "senha"])
+    senha = hash_sha256(senha)
+    usuario_user_case.criar_usuario(nome, senha)
     session["usuario"] = {"nome": nome}
+
     return jsonify({
         "sucesso": True,
         "mensagem": "Usuário cadastrado com sucesso"
     }), 201
 
 
-# -----------------------------
-# Login
-# -----------------------------
+# -----------------------------------------------
+# LOGIN
+# -----------------------------------------------
 @login_cadastro_bp.route("/api/login", methods=["POST"])
 def login_usuario():
     dados = request.get_json()
 
-    if not dados:
-        return jsonify({"sucesso": False, "mensagem": "Dados inválidos"}), 400
-
-    nome = dados.get("nome")
-    senha = dados.get("senha")
-
-    if not nome or not senha:
-        return jsonify({"sucesso": False, "mensagem": "Campos obrigatórios ausentes"}), 400
-
-    senha_hash = hash_senha(senha)
-
-    controle = UsuarioService()
-
-    if not controle.usuario_existe(nome):
-        return jsonify({
-            "sucesso": False,
-            "mensagem": "Usuário não encontrado"
-        }), 404
-
-    if not controle.validar_login(nome, senha_hash):
-        return jsonify({
-            "sucesso": False,
-            "mensagem": "Senha incorreta"
-        }), 401
-
+    nome, senha = extrair_dados(dados, ["nome", "senha"])
+    usuario_user_case.validar_login(nome, senha)
     session["usuario"] = {"nome": nome}
-    return jsonify({
-        "sucesso": True,
-        "mensagem": "Login válido"
-    }), 200
+
+    return jsonify({"sucesso": True, "mensagem": "Login válido"}), 200

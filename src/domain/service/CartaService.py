@@ -1,6 +1,5 @@
 from random import random
 
-from src.domain.service.ImagemCartaGenerator import ImagemCartaGenerator
 from src.domain.entity.CartaEntity import CartaEntity
 from src.infra.dao.CartaDAO import CartaDAO
 
@@ -124,22 +123,11 @@ class CartaService:
         )
 
     # -----------------------------
-    # IMAGEM DA CARTA
-    # -----------------------------
-    @staticmethod
-    def get_image(card: CartaEntity):
-        return ImagemCartaGenerator().gerar_carta(
-            card.get_fundo(),
-            card.get_personagem(),
-            card.get_borda()
-        )
-
-    # -----------------------------
     # CARTA APRESENTAVEL AO CLIENT
     # -----------------------------
     @staticmethod
     def para_client(card: CartaEntity):
         dict_carta = card.to_dict()
         for c, v in dict_carta["stats"].items():
-            dict_carta["stats"][c] = [f"{(sum(v)+dict_carta["bonus"]):.2f}", f"{int(100*(v[1]+3)/5):02d}"]
+            dict_carta["stats"][c] = [f"{(sum(v) + dict_carta["bonus"]):.2f}", f"{int(100 * (v[1] + 3) / 5):02d}"]
         return dict_carta

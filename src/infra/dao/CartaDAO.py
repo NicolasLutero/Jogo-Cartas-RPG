@@ -2,6 +2,8 @@ from src.domain.entity.CartaEntity import CartaEntity
 from src.infra.database.FactoryConnection import FactoryConnection
 import os
 
+from src.infra.exception.InfraException import CartaNaoEncontradaException
+
 
 class CartaDAO:
     _instance = None
@@ -303,10 +305,9 @@ class CartaDAO:
     # -----------------------------
     def buscar_usuario_carta(self, id_usuario: str, id_carta: str) -> CartaEntity:
         carta = self.buscar_por_id(id_carta)
-        if str(carta.get_dono()) == str(id_usuario):
-            return carta
-        else:
-            return None
+        if str(carta.get_dono()) != str(id_usuario):
+            raise CartaNaoEncontradaException()
+        return carta
 
     # -----------------------------
     # LISTA OS TIPOS DE FUNDO, PERSONAGEM E BORDA DE UM JOGADOR

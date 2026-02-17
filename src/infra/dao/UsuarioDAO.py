@@ -1,6 +1,9 @@
+import os
+
 from src.domain.entity.UsuarioEntity import UsuarioEntity
 from src.infra.database.FactoryConnection import FactoryConnection
-import os
+
+from src.infra.exception.InfraException import *
 
 
 class UsuarioDAO:
@@ -106,7 +109,7 @@ class UsuarioDAO:
             row = cur.fetchone()
 
         if not row:
-            return None
+            raise UsuarioNaoEncontradoException()
 
         return UsuarioEntity(
             cod=row[0],
