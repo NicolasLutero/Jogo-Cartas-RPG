@@ -1,12 +1,11 @@
 # LoginCadastroRoutes.py
 from flask import Blueprint, request, jsonify, session
-import hashlib
 
 # Application Class
 from src.application.UsuarioUserCase import UsuarioUserCase
 usuario_user_case = UsuarioUserCase()
 
-# Exceptions
+# Exception
 from src.presentation.exception.PresentationException import *
 
 # Blueprint
@@ -16,10 +15,6 @@ login_cadastro_bp = Blueprint("login_cadastro", __name__)
 # -----------------------------------------------
 # AUXILIAR
 # -----------------------------------------------
-def hash_sha256(txt: str) -> str:
-    hash_txt = hashlib.sha256(txt.encode("utf-8"))
-    return hash_txt.hexdigest()
-
 def extrair_dados(dados, campos):
     if not dados:
         raise DadosInvalidosException()
@@ -37,7 +32,6 @@ def cadastrar_usuario():
     dados = request.get_json()
 
     nome, senha = extrair_dados(dados, ["nome", "senha"])
-    senha = hash_sha256(senha)
     usuario_user_case.criar_usuario(nome, senha)
     session["usuario"] = {"nome": nome}
 

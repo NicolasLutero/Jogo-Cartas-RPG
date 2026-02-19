@@ -1,8 +1,11 @@
-from src.domain.entity.CartaEntity import CartaEntity
-from src.infra.database.FactoryConnection import FactoryConnection
+# CartaDAO.py
 import os
 
-from src.infra.exception.InfraException import CartaNaoEncontradaException
+# Domain Class
+from src.domain.entity.CartaEntity import CartaEntity
+
+# Infra Class
+from src.infra.database.FactoryConnection import FactoryConnection
 
 
 class CartaDAO:
@@ -15,11 +18,11 @@ class CartaDAO:
             cls._instance._init_tables()
         return cls._instance
 
-    # -----------------------------
-    # INIT TABLE
-    # -----------------------------
+
+    # -------------------------------------------
+    # CRIA TABELA SE NÃO EXISTIR
+    # -------------------------------------------
     def _init_tables(self):
-        """Verifica se a tabela existe. Se não existir, cria via TableCarta.sql"""
         try:
             sql_check = """
                 SELECT 1
@@ -35,7 +38,6 @@ class CartaDAO:
                 self._executar_sql_criacao()
 
         except Exception:
-            # Fallback para bancos sem information_schema (ex: SQLite)
             self._executar_sql_criacao()
 
     def _executar_sql_criacao(self):
@@ -50,10 +52,11 @@ class CartaDAO:
 
         self._conn.commit()
 
-    # -----------------------------
-    # CREATE
-    # -----------------------------
-    def criar(self, carta: CartaEntity) -> None:
+
+    # -------------------------------------------
+    # CRIA CARTA
+    # -------------------------------------------
+    def criar(self, carta: CartaEntity) -> int:
         sql = """
             INSERT INTO carta (
                 fundo,
@@ -116,9 +119,10 @@ class CartaDAO:
         carta.set_id(carta_id)
         return carta_id
 
-    # -----------------------------
-    # READ ONE
-    # -----------------------------
+
+    # -------------------------------------------
+    # LÊ CARTA PELO ID
+    # -------------------------------------------
     def buscar_por_id(self, cod: int) -> CartaEntity | None:
         sql = """
             SELECT 
@@ -170,9 +174,10 @@ class CartaDAO:
             dono=row[17]
         )
 
-    # -----------------------------
-    # READ ALL BY USER
-    # -----------------------------
+
+    # -------------------------------------------
+    # LÊ TODAS AS CARTAS POR USUÁRIO
+    # -------------------------------------------
     def listar_por_usuario(self, id_usuario: str) -> list[CartaEntity]:
         sql = """
             SELECT 
@@ -225,9 +230,10 @@ class CartaDAO:
 
         return cartas
 
-    # -----------------------------
-    # TODOS POR USUARIO COM FILTRO
-    # -----------------------------
+
+    # -------------------------------------------
+    # LÊ TODAS AS CARTAS POR USUÁRIO APLICANDO UM FILTRO
+    # -------------------------------------------
     def buscar_por_usuario_filtrado(self, id_usuario: str, filtro: dict) -> list[CartaEntity]:
         sql = """
             SELECT 
@@ -300,64 +306,26 @@ class CartaDAO:
 
         return cartas
 
-    # -----------------------------
-    # BUSCAR CARTA DO USUARIO POR ID
-    # -----------------------------
-    def buscar_usuario_carta(self, id_usuario: str, id_carta: str) -> CartaEntity:
-        carta = self.buscar_por_id(id_carta)
-        if str(carta.get_dono()) != str(id_usuario):
-            raise CartaNaoEncontradaException()
-        return carta
 
-    # -----------------------------
-    # LISTA OS TIPOS DE FUNDO, PERSONAGEM E BORDA DE UM JOGADOR
-    # -----------------------------
-    def listar_tipos(self, id_dono: int) -> dict:
-        return {
-            "fundos": self.listar_tipos_fundo(id_dono),
-            "personagens": self.listar_tipos_personagem(id_dono),
-            "bordas": self.listar_tipos_borda(id_dono)
-        }
-
-    def listar_tipos_fundo(self, id_dono: int) -> list[str]:
+    # -------------------------------------------
+    # LISTA OS TIPOS DE FUNDO, PERSONAGEM E BORDA DE UM USUÁRIO
+    # -------------------------------------------
+    def listar_tipos(self, id_dono, campo) -> list[str]:
         sql = """
-            SELECT DISTINCT fundo
+            SELECT DISTINCT %s
             FROM carta
             WHERE dono = %s
-            ORDER BY fundo;
+            ORDER BY %s;
         """
         with self._conn.cursor() as cur:
-            cur.execute(sql, (id_dono,))
+            cur.execute(sql, (campo, id_dono, campo))
             rows = cur.fetchall()
         return [row[0] for row in rows]
 
-    def listar_tipos_personagem(self, id_dono: int) -> list[str]:
-        sql = """
-            SELECT DISTINCT personagem
-            FROM carta
-            WHERE dono = %s
-            ORDER BY personagem;
-        """
-        with self._conn.cursor() as cur:
-            cur.execute(sql, (id_dono,))
-            rows = cur.fetchall()
-        return [row[0] for row in rows]
 
-    def listar_tipos_borda(self, id_dono: int) -> list[str]:
-        sql = """
-            SELECT DISTINCT borda
-            FROM carta
-            WHERE dono = %s
-            ORDER BY borda;
-        """
-        with self._conn.cursor() as cur:
-            cur.execute(sql, (id_dono,))
-            rows = cur.fetchall()
-        return [row[0] for row in rows]
-
-    # -----------------------------
-    # DELETE
-    # -----------------------------
+    # -------------------------------------------
+    # DELETA CARTA
+    # -------------------------------------------
     def deletar(self, id_carta: int) -> bool:
         sql = """
             DELETE FROM carta
@@ -371,9 +339,10 @@ class CartaDAO:
         self._conn.commit()
         return deletado
 
-    # -----------------------------
-    # UPDATE
-    # -----------------------------
+
+    # -------------------------------------------
+    # ATUALIZA CARTA
+    # -------------------------------------------
     def atualizar(self, carta: CartaEntity) -> bool:
         sql = """
             UPDATE carta

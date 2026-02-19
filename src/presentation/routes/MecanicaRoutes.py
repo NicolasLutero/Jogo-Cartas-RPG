@@ -7,7 +7,7 @@ from src.application.UsuarioUserCase import UsuarioUserCase
 inventario_user_case = InventarioUserCase()
 usuario_user_case = UsuarioUserCase()
 
-# Exceptions
+# Exception
 from src.presentation.exception.PresentationException import *
 
 # Blueprint
@@ -39,24 +39,9 @@ def status_diario():
 
 
 # -----------------------------------------------
-# LISTAR TIPOS DE FUNDO, PERSONAGEM E BORDA QUE UM USUÁRIO TEM
-# -----------------------------------------------
-@mecanica_bp.route("/api/inventario/tipos", methods=["GET"])
-def buscar_tipos():
-    verificar_sessao()
-
-    tipos = inventario_user_case.listar_tipos(session["usuario"]["nome"])
-
-    return jsonify({
-        "sucesso": True,
-        "tipos": tipos
-    }), 200
-
-
-# -----------------------------------------------
 # BUSCAR CARTAS DE UM USUÁRIO COM FILTRO
 # -----------------------------------------------
-@mecanica_bp.route("/api/inventario/", methods=["POST"])
+@mecanica_bp.route("/api/inventario", methods=["POST"])
 def buscar_cartas_usuario():
     verificar_sessao()
 
@@ -72,9 +57,25 @@ def buscar_cartas_usuario():
 
 
 # -----------------------------------------------
+# LISTAR TIPOS DE FUNDO, PERSONAGEM E BORDA QUE UM USUÁRIO TEM
+# -----------------------------------------------
+@mecanica_bp.route("/api/inventario/tipos", methods=["GET"])
+def buscar_tipos_cartas():
+    verificar_sessao()
+
+    nome = session["usuario"]["nome"]
+    tipos = inventario_user_case.buscar_tipos(nome)
+
+    return jsonify({
+        "sucesso": True,
+        "tipos": tipos
+    }), 200
+
+
+# -----------------------------------------------
 # BUSCAR CARTA DE UM USUÁRIO
 # -----------------------------------------------
-@mecanica_bp.route("/api/inventario/carta/", methods=["POST"])
+@mecanica_bp.route("/api/inventario/carta", methods=["POST"])
 def buscar_carta_id():
     verificar_sessao()
 
@@ -108,14 +109,13 @@ def coletar_cartas():
 # -----------------------------------------------
 # REFORJAR CARTA
 # -----------------------------------------------
-@mecanica_bp.route("/api/usuario/reforja/", methods=["POST"])
+@mecanica_bp.route("/api/usuario/reforja", methods=["POST"])
 def refojar_carta():
     verificar_sessao()
 
     nome = session["usuario"]["nome"]
     dados = request.get_json() or {}
     id_carta = dict(dados)["id"]
-
     carta_reforjada = inventario_user_case.reforjar_carta(nome, id_carta)
 
     return jsonify({

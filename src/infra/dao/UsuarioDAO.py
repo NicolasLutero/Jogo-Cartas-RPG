@@ -1,9 +1,11 @@
+# UsuarioDAO.py
 import os
 
+# Domain Class
 from src.domain.entity.UsuarioEntity import UsuarioEntity
-from src.infra.database.FactoryConnection import FactoryConnection
 
-from src.infra.exception.InfraException import *
+# Infra Class
+from src.infra.database.FactoryConnection import FactoryConnection
 
 
 class UsuarioDAO:
@@ -16,11 +18,11 @@ class UsuarioDAO:
             cls._instance._init_tables()
         return cls._instance
 
-    # -----------------------------
-    # INIT TABLE
-    # -----------------------------
+
+    # -------------------------------------------
+    # CRIA TABELA SE NÃO EXISTIR
+    # -------------------------------------------
     def _init_tables(self):
-        """Verifica se a tabela existe. Se não existir, cria via TableUsuario.sql"""
         try:
             sql_check = """
                 SELECT 1
@@ -36,7 +38,6 @@ class UsuarioDAO:
                 self._executar_sql_criacao()
 
         except Exception:
-            # Fallback para bancos sem information_schema (ex: SQLite)
             self._executar_sql_criacao()
 
     def _executar_sql_criacao(self):
@@ -51,9 +52,10 @@ class UsuarioDAO:
 
         self._conn.commit()
 
-    # -----------------------------
-    # CREATE
-    # -----------------------------
+
+    # -------------------------------------------
+    # CRIA USUÁRIO
+    # -------------------------------------------
     def criar(self, usuario: UsuarioEntity) -> int:
         sql = """
             INSERT INTO usuario (
@@ -87,9 +89,10 @@ class UsuarioDAO:
         usuario.set_id(usuario_id)
         return usuario_id
 
-    # -----------------------------
-    # READ ONE
-    # -----------------------------
+
+    # -------------------------------------------
+    # LÊ USUÁRIO POR NOME
+    # -------------------------------------------
     def buscar_por_nome(self, nome: str) -> UsuarioEntity | None:
         sql = """
             SELECT 
@@ -109,7 +112,7 @@ class UsuarioDAO:
             row = cur.fetchone()
 
         if not row:
-            raise UsuarioNaoEncontradoException()
+            return None
 
         return UsuarioEntity(
             cod=row[0],
@@ -121,9 +124,10 @@ class UsuarioDAO:
             data_fundir=str(row[6]) if row[6] is not None else row[6]
         )
 
-    # -----------------------------
-    # DELETE
-    # -----------------------------
+
+    # -------------------------------------------
+    # DELETA USUÁRIO
+    # -------------------------------------------
     def deletar(self, nome: str) -> bool:
         sql = """
             DELETE FROM usuario
@@ -137,9 +141,10 @@ class UsuarioDAO:
         self._conn.commit()
         return deletado
 
-    # -----------------------------
-    # UPDATE (opcional)
-    # -----------------------------
+
+    # -------------------------------------------
+    # ATUALIZA USUÁRIO
+    # -------------------------------------------
     def atualizar(self, usuario: UsuarioEntity) -> bool:
         sql = """
             UPDATE usuario
@@ -163,4 +168,3 @@ class UsuarioDAO:
 
         self._conn.commit()
         return atualizado
-

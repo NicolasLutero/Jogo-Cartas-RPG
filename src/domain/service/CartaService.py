@@ -1,6 +1,11 @@
+# CartaService.py
 from random import random
 
+# Domain Class
 from src.domain.entity.CartaEntity import CartaEntity
+from src.domain.entity.UsuarioEntity import UsuarioEntity
+
+# Infra Class
 from src.infra.dao.CartaDAO import CartaDAO
 
 
@@ -14,11 +19,18 @@ class CartaService:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
+            cls.carta_dao = CartaDAO()
         return cls._instance
+
 
     # -----------------------------
     # CREATE
     # -----------------------------
+    def gerar_n_cartas(self, n, usuario):
+        cartas = [self.carta_aleatoria(usuario.get_id(), usuario.get_fator_n()) for _ in range(n)]
+        for carta in cartas:
+            self.carta_dao.criar(carta)
+
     def carta_aleatoria(self, dono, fator_n) -> CartaEntity:
         n = (random() + fator_n) % 1
         return self.gerar_carta(dono, n)
@@ -71,21 +83,34 @@ class CartaService:
                 stats = [8, 15, 14, 12, 13, 10]
         return stats
 
+
+    # -------------------------------------------
+    # BUSCAR CARTA POR ID
+    # -------------------------------------------
+    def buscar_carta(self, id_carta):
+        return self.carta_dao.buscar_por_id(id_carta)
+
+
     # -----------------------------
     # REFORJA
     # -----------------------------
-    def reforjar(self, v1, card1: CartaEntity) -> CartaEntity:
-        card2 = self.carta_aleatoria(card1.get_dono(), v1)
+    def reforjar(self, usuario: UsuarioEntity, card1: CartaEntity) -> CartaEntity:
+        fator_n = usuario.get_fator_n()
+        dono_id = usuario.get_id()
+
+        card2 = self.carta_aleatoria(dono_id, fator_n)
         while card2.get_nome() != card1.get_nome():
-            card2 = self.carta_aleatoria(card1.get_dono(), v1)
+            card2 = self.carta_aleatoria(dono_id, fator_n)
 
         for atr in ["for", "des", "con", "int", "sab", "car"]:
             card1.set_atributo(atr, [card1.get_stats()[atr][0],
                                      max(card1.get_stats()[atr][1], card2.get_stats()[atr][1])])
 
-        CartaDAO().atualizar(card1)
+        self.carta_dao.atualizar(card1)
         return card1
 
+
+    """
     # -----------------------------
     # FUNDIR
     # -----------------------------
@@ -121,6 +146,7 @@ class CartaService:
             raridade,
             stats3
         )
+    """
 
     # -----------------------------
     # CARTA APRESENTAVEL AO CLIENT

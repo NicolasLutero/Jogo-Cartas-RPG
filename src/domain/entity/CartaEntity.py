@@ -21,7 +21,10 @@ class CartaEntity:
         self._bonus = bonus
         self._dono = dono
 
-    # -------- GETTERS --------
+
+    # -------------------------------------------
+    # GETTERS
+    # -------------------------------------------
     def get_id(self):
         return self._cod
 
@@ -37,19 +40,22 @@ class CartaEntity:
     def get_borda(self):
         return self._borda
 
-    def get_bonus(self):
-        return self._bonus
-
     def get_stats(self):
         return self._stats
 
     def get_atributo(self, atr: str) -> list:
         return sum(self._stats[atr]) + self._bonus
 
+    def get_bonus(self):
+        return self._bonus
+
     def get_dono(self) -> int:
         return self._dono
 
-    # -------- SETTERS --------
+
+    # -------------------------------------------
+    # SETTERS
+    # -------------------------------------------
     def set_id(self, cod):
         self._cod = cod
 
@@ -71,7 +77,13 @@ class CartaEntity:
     def set_atributo(self, atr: str, valor: list):
         self._stats[atr] = valor
 
-    # -------- SERIALIZAÇÃO --------
+    def set_dono(self, dono: int):
+        self._dono = dono
+
+
+    # -------------------------------------------
+    # SERIALIZAÇÃO E DESERIALIZAÇÃO
+    # -------------------------------------------
     def to_dict(self) -> dict:
         return {
             "id": self._cod,
@@ -91,14 +103,7 @@ class CartaEntity:
             dados["fundo"],
             dados["personagem"],
             dados["borda"],
-            dict(dados.get("stats", {})),
+            dados["stats"],
             dados["bonus"],
             dados["dono"]
-        )
-
-    # -------- REPRESENTAÇÃO --------
-    def __repr__(self):
-        return (
-            f"CartaEntity(nome={self.get_nome()!r}, cenario={self._fundo!r}, "
-            f"personagem={self._personagem!r}, raridade={self._borda!r}, stats={self._stats!r})"
         )

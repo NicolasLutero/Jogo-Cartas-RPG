@@ -1,5 +1,5 @@
 # SiteRoutes.py
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, session
 from io import BytesIO
 import base64
 
@@ -7,7 +7,7 @@ import base64
 from src.domain.service.ImagemCartaGenerator import ImagemCartaGenerator
 imagem_carta_generator = ImagemCartaGenerator()
 
-# Exceptions
+# Exception
 from src.presentation.exception.PresentationException import *
 
 # Blueprint
@@ -30,6 +30,8 @@ def cadastro():
 # -----------------------------------------------
 @site_bp.route("/home", methods=["GET"])
 def home():
+    if "usuario" not in session:
+        return render_template("login.html")
     return render_template("home.html")
 
 # -----------------------------------------------
@@ -37,18 +39,26 @@ def home():
 # -----------------------------------------------
 @site_bp.route("/cartas_diarias", methods=["GET"])
 def cartas_diarias():
+    if "usuario" not in session:
+        return render_template("login.html")
     return render_template("cartas_diarias.html")
 
 @site_bp.route("/inventario", methods=["GET"])
 def inventario():
+    if "usuario" not in session:
+        return render_template("login.html")
     return render_template("inventario.html")
 
 @site_bp.route("/fundicao", methods=["GET"])
 def fundicao():
+    if "usuario" not in session:
+        return render_template("login.html")
     return render_template("fundicao.html")
 
 @site_bp.route("/reforja", methods=["GET"])
 def reforjar():
+    if "usuario" not in session:
+        return render_template("login.html")
     return render_template("reforja.html")
 
 # -----------------------------------------------

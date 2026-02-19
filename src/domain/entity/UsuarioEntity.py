@@ -1,6 +1,4 @@
 # UsuarioEntity.py
-from datetime import date
-from random import random
 
 
 class UsuarioEntity:
@@ -9,20 +7,23 @@ class UsuarioEntity:
         cod: int,
         nome: str,
         senha_hash: str,
-        fator_n: float | None = random(),
-        data_reforjar: date | None = None,
-        data_cartas_diarias: date | None = None,
-        data_fundir: date | None = None
+        fator_n: float,
+        data_reforjar: str | None = None,
+        data_cartas_diarias: str | None = None,
+        data_fundir: str | None = None
     ):
         self._cod = cod
         self._nome = nome
         self._senha = senha_hash
-        self._fator_n = fator_n if fator_n is not None else random()
+        self._fator_n = fator_n
         self._data_reforjar = data_reforjar
         self._data_cartas_diarias = data_cartas_diarias
         self._data_fundir = data_fundir
 
-    # -------- GETTERS --------
+
+    # -------------------------------------------
+    # GETTERS
+    # -------------------------------------------
     def get_id(self):
         return self._cod
 
@@ -44,7 +45,10 @@ class UsuarioEntity:
     def get_data_fundir(self):
         return self._data_fundir
 
-    # -------- SETTERS --------
+
+    # -------------------------------------------
+    # SETTERS
+    # -------------------------------------------
     def set_id(self, cod: str):
         self._cod = cod
 
@@ -54,16 +58,19 @@ class UsuarioEntity:
     def set_senha(self, senha_hash: str):
         self._senha = senha_hash
 
-    def set_data_reforjar(self, data: date):
+    def set_data_reforjar(self, data: str):
         self._data_reforjar = data
 
-    def set_data_cartas_diarias(self, data: date):
+    def set_data_cartas_diarias(self, data: str):
         self._data_cartas_diarias = data
 
-    def set_data_fundir(self, data: date):
+    def set_data_fundir(self, data: str):
         self._data_fundir = data
 
-    # -------- SERIALIZAÇÃO --------
+
+    # -------------------------------------------
+    # SERIALIZAÇÃO E DESERIALIZAÇÃO
+    # -------------------------------------------
     def to_dict(self) -> dict:
         return {
             "id": self._cod,

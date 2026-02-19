@@ -1,3 +1,4 @@
+# ImagemCartaGenerator.py
 from PIL import Image
 from math import sqrt
 from pathlib import Path
@@ -6,7 +7,6 @@ from pathlib import Path
 class ImagemCartaGenerator:
     _instance = None
     ROOT = Path(__file__).resolve().parents[3]  # ajuste níveis se necessário
-
 
     def __new__(cls):
         if cls._instance is None:
@@ -21,7 +21,7 @@ class ImagemCartaGenerator:
         w, h = img.size
         new_w = int(w * scale)
         new_h = int(h * scale)
-        return img.resize((new_w, new_h), Image.LANCZOS)
+        return img.resize((new_w, new_h), Image.Resampling.LANCZOS)
 
     @staticmethod
     def paste_center(base, overlay, offset_x=0, offset_y=0):
@@ -43,7 +43,6 @@ class ImagemCartaGenerator:
 
     @staticmethod
     def aplicar_borda_transparente(img, radius_px):
-        """Recorte com cantos arredondados (border-radius style)"""
         if radius_px <= 0:
             return img
 
