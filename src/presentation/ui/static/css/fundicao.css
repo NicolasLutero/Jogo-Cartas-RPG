@@ -122,8 +122,10 @@ body {
 .painel-direito {
     width: 260px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 10px;
 }
 
 .painel-esquerdo {
@@ -131,7 +133,7 @@ body {
     height: 460px;
 }
 
-.btn-reforjar {
+.btn {
     padding: 16px 32px;
     font-size: 18px;
     font-weight: bold;
@@ -144,7 +146,7 @@ body {
     transition: all 0.25s ease;
 }
 
-.btn-reforjar:hover {
+.btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 24px rgba(0,0,0,0.35);
 }

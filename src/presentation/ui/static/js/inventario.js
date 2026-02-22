@@ -11,6 +11,18 @@ const filtroFundos = document.getElementById("filtroFundos");
 const filtroPersonagens = document.getElementById("filtroPersonagens");
 const filtroBordas = document.getElementById("filtroBordas");
 
+const btnRetorna = document.getElementById("btn-retornar");
+if (retornoInventario){
+    if (retornoInventario === "selecionandoForja") {
+        btnRetorna.addEventListener("click", () => window.location.href='/reforja');
+    } else if (retornoInventario === "selecionandoBaseFundicao" ||
+               retornoInventario === "selecionandoSacrificioFundicao") {
+        btnRetorna.addEventListener("click", () => window.location.href='/fundicao');
+    }
+} else {
+    btnRetorna.addEventListener("click", () => window.location.href='/home');
+}
+
 let fundos = [];
 let personagens = [];
 let bordas = [];

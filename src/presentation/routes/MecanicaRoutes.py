@@ -1,5 +1,6 @@
 # MecanicaRoutes.py
 from flask import Blueprint, session, jsonify, request
+from src.presentation.routes.auxiliares import verificar_sessao
 
 # Application Class
 from src.application.InventarioUserCase import InventarioUserCase
@@ -15,19 +16,12 @@ mecanica_bp = Blueprint("mecanica", __name__)
 
 
 # -----------------------------------------------
-# AUXILIAR
-# -----------------------------------------------
-def verificar_sessao():
-    if "usuario" not in session:
-        raise UsuarioNaoAutentificadoException()
-
-
-# -----------------------------------------------
 # ACESSO AO STATUS DIÁRIO
 # -----------------------------------------------
 @mecanica_bp.route("/api/usuario/status-diario", methods=["GET"])
 def status_diario():
-    verificar_sessao()
+    if not verificar_sessao():
+        raise UsuarioNaoAutentificadoException()
 
     nome = session["usuario"]["nome"]
     status = usuario_user_case.acoes_disponiveis(nome)
@@ -43,7 +37,8 @@ def status_diario():
 # -----------------------------------------------
 @mecanica_bp.route("/api/inventario", methods=["POST"])
 def buscar_cartas_usuario():
-    verificar_sessao()
+    if not verificar_sessao():
+        raise UsuarioNaoAutentificadoException()
 
     nome = session["usuario"]["nome"]
     dados = request.get_json() or {}
@@ -61,7 +56,8 @@ def buscar_cartas_usuario():
 # -----------------------------------------------
 @mecanica_bp.route("/api/inventario/tipos", methods=["GET"])
 def buscar_tipos_cartas():
-    verificar_sessao()
+    if not verificar_sessao():
+        raise UsuarioNaoAutentificadoException()
 
     nome = session["usuario"]["nome"]
     tipos = inventario_user_case.buscar_tipos(nome)
@@ -77,7 +73,8 @@ def buscar_tipos_cartas():
 # -----------------------------------------------
 @mecanica_bp.route("/api/inventario/carta", methods=["POST"])
 def buscar_carta_id():
-    verificar_sessao()
+    if not verificar_sessao():
+        raise UsuarioNaoAutentificadoException()
 
     nome = session["usuario"]["nome"]
     dados = request.get_json() or {}
@@ -95,7 +92,8 @@ def buscar_carta_id():
 # -----------------------------------------------
 @mecanica_bp.route("/api/usuario/cartas-diarias", methods=["GET"])
 def coletar_cartas():
-    verificar_sessao()
+    if not verificar_sessao():
+        raise UsuarioNaoAutentificadoException()
 
     nome = session["usuario"]["nome"]
     cartas = inventario_user_case.coletar_cartas(nome)
@@ -111,7 +109,8 @@ def coletar_cartas():
 # -----------------------------------------------
 @mecanica_bp.route("/api/usuario/reforja", methods=["POST"])
 def refojar_carta():
-    verificar_sessao()
+    if not verificar_sessao():
+        raise UsuarioNaoAutentificadoException()
 
     nome = session["usuario"]["nome"]
     dados = request.get_json() or {}
@@ -129,7 +128,8 @@ def refojar_carta():
 # -----------------------------------------------
 @mecanica_bp.route("/api/usuario/fundicao", methods=["POST"])
 def fundir_carta():
-    verificar_sessao()
+    if not verificar_sessao():
+        raise UsuarioNaoAutentificadoException()
 
     nome = session["usuario"]["nome"]
     dados = request.get_json() or {}

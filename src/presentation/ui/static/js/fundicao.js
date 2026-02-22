@@ -9,6 +9,9 @@ const cartaSacrificio = document.getElementById("carta-sacrificio");
 const cartaResultado = document.getElementById("carta-resultado");
 const btnFundir = document.getElementById("btn-fundir");
 
+const btnRetorna = document.getElementById("btn-retornar");
+btnRetorna.addEventListener("click", () => window.location.href='/home');
+
 
 function selecionarBase() {
     localStorage.removeItem("cartaBaseFundicao");

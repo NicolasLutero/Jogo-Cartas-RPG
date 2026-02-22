@@ -1,5 +1,6 @@
 # LoginCadastroRoutes.py
 from flask import Blueprint, request, jsonify, session
+from datetime import datetime, timezone
 
 # Application Class
 from src.application.UsuarioUserCase import UsuarioUserCase
@@ -33,7 +34,8 @@ def cadastrar_usuario():
 
     nome, senha = extrair_dados(dados, ["nome", "senha"])
     usuario_user_case.criar_usuario(nome, senha)
-    session["usuario"] = {"nome": nome}
+    timestamp_atual = datetime.now(timezone.utc).timestamp()
+    session["usuario"] = {"nome": nome, "timestamp": timestamp_atual}
 
     return jsonify({
         "sucesso": True,
@@ -50,6 +52,16 @@ def login_usuario():
 
     nome, senha = extrair_dados(dados, ["nome", "senha"])
     usuario_user_case.validar_login(nome, senha)
-    session["usuario"] = {"nome": nome}
+    timestamp_atual = datetime.now(timezone.utc).timestamp()
+    session["usuario"] = {"nome": nome, "timestamp": timestamp_atual}
 
     return jsonify({"sucesso": True, "mensagem": "Login válido"}), 200
+
+
+# -----------------------------------------------
+# LOGOUT
+# -----------------------------------------------
+@login_cadastro_bp.route("/api/logout", methods=["POST"])
+def logout_usuario():
+    session.clear()
+    return {"redirect": "/"}

@@ -1,7 +1,8 @@
 # SiteRoutes.py
-from flask import Blueprint, render_template, request, jsonify, session
+from flask import Blueprint, render_template, request, jsonify
 from io import BytesIO
 import base64
+from src.presentation.routes.auxiliares import verificar_sessao
 
 # Application Class
 from src.domain.service.ImagemCartaGenerator import ImagemCartaGenerator
@@ -19,10 +20,14 @@ site_bp = Blueprint("site", __name__)
 # -----------------------------------------------
 @site_bp.route("/", methods=["GET"])
 def login():
+    if verificar_sessao():
+        return render_template("home.html")
     return render_template("login.html")
 
 @site_bp.route("/cadastro", methods=["GET"])
 def cadastro():
+    if verificar_sessao():
+        return render_template("home.html")
     return render_template("cadastro.html")
 
 # -----------------------------------------------
@@ -30,7 +35,7 @@ def cadastro():
 # -----------------------------------------------
 @site_bp.route("/home", methods=["GET"])
 def home():
-    if "usuario" not in session:
+    if not verificar_sessao():
         return render_template("login.html")
     return render_template("home.html")
 
@@ -39,25 +44,25 @@ def home():
 # -----------------------------------------------
 @site_bp.route("/cartas_diarias", methods=["GET"])
 def cartas_diarias():
-    if "usuario" not in session:
+    if not verificar_sessao():
         return render_template("login.html")
     return render_template("cartas_diarias.html")
 
 @site_bp.route("/inventario", methods=["GET"])
 def inventario():
-    if "usuario" not in session:
+    if not verificar_sessao():
         return render_template("login.html")
     return render_template("inventario.html")
 
 @site_bp.route("/fundicao", methods=["GET"])
 def fundicao():
-    if "usuario" not in session:
+    if not verificar_sessao():
         return render_template("login.html")
     return render_template("fundicao.html")
 
 @site_bp.route("/reforja", methods=["GET"])
 def reforjar():
-    if "usuario" not in session:
+    if not verificar_sessao():
         return render_template("login.html")
     return render_template("reforja.html")
 

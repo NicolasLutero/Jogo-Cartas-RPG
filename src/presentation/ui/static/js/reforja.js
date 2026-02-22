@@ -5,7 +5,10 @@ const cartaForjaId = localStorage.getItem("cartaForja");
 
 const cartaForja = document.getElementById("carta-reforja");
 const cartaResultado = document.getElementById("carta-resultado");
-const btnReforja = document.getElementById("btn-reforjar")
+const btnReforja = document.getElementById("btn-reforjar");
+
+const btnRetorna = document.getElementById("btn-retornar");
+btnRetorna.addEventListener("click", () => window.location.href='/home');
 
 
 function selecionarForja(){
@@ -24,7 +27,7 @@ function bloquearInterface() {
 
 
 function reforjar(){
-    if (!cartaForja) {
+    if (!cartaForjaId) {
         alert("É necessario escolher uma carta!");
         return;
     }
@@ -66,4 +69,3 @@ fetch("/api/usuario/status-diario")
         btnReforja.addEventListener("click", reforjar)
     }
 });
-

@@ -54,3 +54,15 @@ fetch("/api/usuario/status-diario")
 .catch(err => {
     console.error("Erro ao carregar status diário:", err);
 });
+
+
+const btn_logout = document.getElementById("btn-logout");
+
+btn_logout.addEventListener("click", async () => {
+    const response = await fetch("/api/logout", {
+        method: "POST"
+    });
+
+    const data = await response.json();
+    window.location.href = data.redirect;
+});
