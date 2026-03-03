@@ -30,6 +30,7 @@ def cadastro():
         return render_template("home.html")
     return render_template("cadastro.html")
 
+
 # -----------------------------------------------
 # HOME
 # -----------------------------------------------
@@ -38,6 +39,7 @@ def home():
     if not verificar_sessao():
         return render_template("login.html")
     return render_template("home.html")
+
 
 # -----------------------------------------------
 # FUNCIONALIDADES
@@ -65,6 +67,7 @@ def reforjar():
     if not verificar_sessao():
         return render_template("login.html")
     return render_template("reforja.html")
+
 
 # -----------------------------------------------
 # ACESSO AO GERADOR DE IMAGEM

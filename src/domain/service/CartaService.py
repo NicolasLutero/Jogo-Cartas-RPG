@@ -12,8 +12,12 @@ from src.infra.dao.CartaDAO import CartaDAO
 class CartaService:
     _instance = None
 
-    personagem = [[1, "Mago"], [1, "Arqueiro"], [1, "Guerreiro"]]
-    fundo = [[1, "Planície"], [1, "Montanha"], [1, "Floresta"]]
+    personagem = [[1, "Mago"], [1, "Arqueiro"], [1, "Guerreiro"],
+                  [1, "Barbaro"], [1, "Barbaro Gelo"], [1, "Druida"],
+                  [1, "Guerreiro Githyanki"], [1, "Ladino Lua"], [1, "Monge Eclipse"],
+                  [1, "Piromancer"]]
+    fundo = [[1, "Planície"], [1, "Montanha"], [1, "Floresta"],
+             [1, "Floresta Noturna"], [1, "Vulcao"]]
     borda = [[1, "Perfeito"], [2, "Top"], [3, "Ótimo"], [4, "Bom"], [5, "Comum"]]
 
     def __new__(cls):
@@ -82,6 +86,20 @@ class CartaService:
                 stats = [15, 13, 14, 8, 12, 10]
             case "Arqueiro":
                 stats = [8, 15, 14, 12, 13, 10]
+            case "Barbaro":
+                stats = [15, 12, 14, 8, 10, 13]
+            case "Barbaro Gelo":
+                stats = [14, 10, 15, 12, 13, 8]
+            case "Druida":
+                stats = [10, 12, 13, 8, 15, 14]
+            case "Guerreiro Githyanki":
+                stats = [14, 15, 13, 10, 8, 12]
+            case "Ladino Lua":
+                stats = [10, 15, 12, 13, 14, 8]
+            case "Monge Eclipse":
+                stats = [12, 14, 13, 10, 15, 8]
+            case "Piromancer":
+                stats = [8, 12, 10, 15, 13, 14]
         return stats
 
 

@@ -18,7 +18,7 @@ fetch("/api/usuario/status-diario")
     const btn_fundir = document.getElementById("fundir");
 
     btn_jogar.addEventListener("click", () => {
-        window.location.href = btn_jogar.getAttribute("data-rota");
+        // window.location.href = btn_jogar.getAttribute("data-rota");
     });
 
     btn_inventario.addEventListener("click", () => {

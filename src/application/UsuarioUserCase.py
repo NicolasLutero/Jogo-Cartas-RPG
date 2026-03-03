@@ -20,7 +20,7 @@ class UsuarioUserCase:
         return cls._instance
 
     # -------------------------------------------
-    # AUZILIAR
+    # AUXILIAR
     # -------------------------------------------
     @staticmethod
     def hash_sha256(txt: str) -> str:

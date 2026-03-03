@@ -53,6 +53,7 @@ class Server(Flask):
                 "mensagem": "Erro interno do servidor"
             }), 500
 
+
 if __name__ == "__main__":
     app = Server(__name__)
     app.secret_key = "ABCDE12345FGHIJ67890"
