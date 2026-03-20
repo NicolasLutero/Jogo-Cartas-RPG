@@ -9,6 +9,8 @@ A versão atual do sistema contempla exclusivamente a **administração de carta
 
 O objetivo desta etapa é consolidar regras de domínio, persistência e organização arquitetural antes da implementação de mecânicas de jogo.
 
+[Galeria de Fotos do Gerador de Cartinhas](https://drive.google.com/drive/folders/1PvTlhDMctvWQEE73xk7idqshj2U1Vygx?usp=sharing)
+
 ---
 
 ## 🎯 Objetivo do Projeto
